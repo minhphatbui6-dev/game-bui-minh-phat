@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bui Minh Phat Obby</title>
+</head>
+<body style="margin:0; background:#222; display:flex; justify-content:center; align-items:center; height:100vh;">
+
+<canvas id="gameCanvas" width="800" height="400" style="background:#fff; border:5px solid #00b4ff;"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Cấu hình nhân vật
+let player = {x: 50, y: 300, w: 30, h: 30, dy: 0, jumping: false};
+let obstacle = {x: 800, y: 310, w: 20, h: 40};
+let score = 0;
+
+// Điều khiển (Bấm phím bất kỳ để nhảy)
+document.addEventListener("keydown", (e) => {
+    if(!player.jumping) { player.dy = -15; player.jumping = true; }
+});
+
+function update() {
+    // Trọng lực
+    player.dy += 0.8;
+    player.y += player.dy;
+    if(player.y > 300) { player.y = 300; player.jumping = false; }
+    
+    // Di chuyển chướng ngại vật
+    obstacle.x -= 7; // Độ khó tăng dần
+    if(obstacle.x < -20) { 
+        obstacle.x = 800; 
+        score++; 
+    }
+    
+    // Va chạm
+    if(player.x < obstacle.x + obstacle.w && player.x + player.w > obstacle.x && player.y + player.h > obstacle.y) {
+        alert("Game Over! Điểm của bạn: " + score);
+        score = 0;
+        obstacle.x = 800;
+    }
+
+    // VẼ MÀN HÌNH
+    ctx.clearRect(0, 0, 800, 400);
+    
+    // Vẽ nhân vật
+    ctx.fillStyle = "blue";
+    ctx.fillRect(player.x, player.y, player.w, player.h);
+    
+    // Vẽ tên trên đầu
+    ctx.fillStyle = "black";
+    ctx.font = "bold 14px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Bui Minh Phat", player.x + 15, player.y - 10);
+    
+    // Vẽ vật cản
+    ctx.fillStyle = "red";
+    ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+    
+    // Vẽ điểm
+    ctx.fillStyle = "black";
+    ctx.fillText("Score: " + score, 750, 30);
+
+    requestAnimationFrame(update);
+}
+
+update();
+</script>
+</body>
+</html>
